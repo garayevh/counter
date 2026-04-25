@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Counter</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0a0a;
+      --surface: #111;
+      --accent: #e8ff47;
+      --red: #ff4757;
+      --text: #f0f0f0;
+      --muted: #444;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Space Mono', monospace;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    /* grid background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(232,255,71,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(232,255,71,0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+    }
+
+    .card {
+      position: relative;
+      background: var(--surface);
+      border: 1px solid #222;
+      border-radius: 4px;
+      padding: 60px 70px;
+      text-align: center;
+      box-shadow: 0 0 60px rgba(232,255,71,0.06);
+      min-width: 380px;
+    }
+
+    .label {
+      font-size: 11px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+
+    .counter-display {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 140px;
+      line-height: 1;
+      color: var(--accent);
+      text-shadow: 0 0 40px rgba(232,255,71,0.3);
+      transition: transform 0.08s ease, text-shadow 0.2s;
+      user-select: none;
+      letter-spacing: -2px;
+    }
+
+    .counter-display.pop {
+      transform: scale(1.07);
+      text-shadow: 0 0 60px rgba(232,255,71,0.6);
+    }
+
+    .counter-display.negative {
+      color: var(--red);
+      text-shadow: 0 0 40px rgba(255,71,87,0.4);
+    }
+
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--muted), transparent);
+      margin: 30px 0;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+
+    .btn {
+      font-family: 'Space Mono', monospace;
+      font-size: 24px;
+      font-weight: 700;
+      width: 72px;
+      height: 72px;
+      border-radius: 4px;
+      border: 2px solid var(--muted);
+      background: transparent;
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.15s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--accent);
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+
+    .btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      box-shadow: 0 0 20px rgba(232,255,71,0.15);
+    }
+
+    .btn:active::after { opacity: 0.08; }
+    .btn:active { transform: scale(0.94); }
+
+    .btn-minus:hover {
+      border-color: var(--red);
+      color: var(--red);
+      box-shadow: 0 0 20px rgba(255,71,87,0.15);
+    }
+
+    .btn-reset {
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      width: 100%;
+      height: 44px;
+      border-radius: 4px;
+      border: 1px solid #222;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      font-family: 'Space Mono', monospace;
+      transition: all 0.15s;
+    }
+
+    .btn-reset:hover {
+      border-color: var(--red);
+      color: var(--red);
+      box-shadow: 0 0 16px rgba(255,71,87,0.1);
+    }
+
+    .btn-reset:active { transform: scale(0.97); }
+
+    .hint {
+      margin-top: 20px;
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: #2a2a2a;
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <div class="label">Counter</div>
+  <div class="counter-display" id="display">0</div>
+  <div class="divider"></div>
+  <div class="buttons">
+    <button class="btn btn-minus" onclick="change(-1)" title="Minus">−</button>
+    <button class="btn btn-plus"  onclick="change(+1)" title="Plus">+</button>
+  </div>
+  <button class="btn-reset" onclick="reset()">Reset</button>
+  <div class="hint">← → arrow keys also work</div>
+</div>
+
+<script>
+  let count = 0;
+  const display = document.getElementById('display');
+
+  function update() {
+    display.textContent = count;
+    display.classList.toggle('negative', count < 0);
+    display.classList.add('pop');
+    setTimeout(() => display.classList.remove('pop'), 100);
+  }
+
+  function change(n) { count += n; update(); }
+  function reset()    { count = 0;  update(); }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowUp')   change(+1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowDown')  change(-1);
+    if (e.key === 'r' || e.key === 'R') reset();
+  });
+</script>
+</body>
+</html>
